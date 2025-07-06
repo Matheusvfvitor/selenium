@@ -27,17 +27,10 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     xdg-utils \
     procps \
-    cron && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Instala Google Chromium
-RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
     cron \
-    procps \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    chromium \
+    chromium-driver && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
