@@ -1,28 +1,52 @@
 FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Sao_Paulo
 
-# Instala cron + Python
-RUN apt-get update && \
-    apt-get install -y cron && \
+# Instala dependências
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    unzip \
+    gnupg \
+    libglib2.0-0 \
+    libnss3 \
+    libgconf-2-4 \
+    libfontconfig1 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libxrandr2 \
+    libasound2 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    fonts-liberation \
+    xdg-utils \
+    procps \
+    cron && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Define diretório do projeto
+# Instala Google Chrome
+RUN wget -q -O chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install -y ./chrome.deb && rm chrome.deb
+
 WORKDIR /app
 
-# Copia arquivos
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-# Cria um arquivo de cron separado e instala ele
-RUN echo "0 6 * * * root python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/daily-job \
-    && chmod 0644 /etc/cron.d/daily-job \
-    && crontab /etc/cron.d/daily-job
+# Cria arquivo de cron para rodar diariamente às 6h
+RUN echo "0 6 * * * root python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/daily-job && \
+    chmod 0644 /etc/cron.d/daily-job && \
+    crontab /etc/cron.d/daily-job && \
+    touch /var/log/cron.log
 
-# Garante que o log exista
-RUN touch /var/log/cron.log
-
-# Comando final: start cron e mostra log
+# Roda cron e loga a saída
 CMD cron && tail -f /var/log/cron.log
