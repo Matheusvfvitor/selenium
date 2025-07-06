@@ -2,19 +2,27 @@ FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instala cron e python
+# Instala cron + Python
 RUN apt-get update && \
     apt-get install -y cron && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Define diretório do projeto
 WORKDIR /app
+
+# Copia arquivos
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
 
-# Cria cron job: executa script todo dia às 6h
-RUN echo "0 6 * * * python /app/main.py >> /var/log/cron.log 2>&1" >> /etc/crontab
+# Cria um arquivo de cron separado e instala ele
+RUN echo "0 6 * * * root python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/daily-job \
+    && chmod 0644 /etc/cron.d/daily-job \
+    && crontab /etc/cron.d/daily-job
 
-# Executa o cron no foreground para manter o container ativo
-CMD ["cron", "-f"]
+# Garante que o log exista
+RUN touch /var/log/cron.log
+
+# Comando final: start cron e mostra log
+CMD cron && tail -f /var/log/cron.log
