@@ -9,6 +9,7 @@ import requests
 import time
 
 def realizar_login(email, senha, unidade):
+    print('v1.0')
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
