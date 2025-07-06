@@ -1,13 +1,20 @@
 FROM python:3.10-slim
 
-# Evita prompts do apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /app
+# Instala cron e python
+RUN apt-get update && \
+    apt-get install -y cron && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt requirements.txt
+WORKDIR /app
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "main.py"]
+# Cria cron job: executa script todo dia às 6h
+RUN echo "0 6 * * * python /app/main.py >> /var/log/cron.log 2>&1" >> /etc/crontab
+
+# Executa o cron no foreground para manter o container ativo
+CMD ["cron", "-f"]
