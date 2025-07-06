@@ -44,11 +44,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Cria arquivo de cron para rodar diariamente às 6h
+# Cria cronjob para rodar diariamente às 6h
 RUN echo "0 6 * * * root python /app/main.py >> /var/log/cron.log 2>&1" > /etc/cron.d/daily-job && \
     chmod 0644 /etc/cron.d/daily-job && \
-    crontab /etc/cron.d/daily-job && \
     touch /var/log/cron.log
 
-# Roda cron e loga a saída
 CMD cron && tail -f /var/log/cron.log
