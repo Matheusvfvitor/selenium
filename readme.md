@@ -11,6 +11,7 @@ Este repositório contém uma função HTTP para o **Google Cloud Functions Gen 
 ## 📦 Estrutura
 
 cloud-function-selenium/
+
 ├── main.py # Código principal da função
 
 ├── requirements.txt # Dependências Python (Selenium)
