@@ -12,15 +12,10 @@ Este repositório contém uma função HTTP para o **Google Cloud Functions Gen 
 
 cloud-function-selenium/
 ├── main.py # Código principal da função
-
 ├── requirements.txt # Dependências Python (Selenium)
-
 ├── chrome_setup.sh # Script opcional para baixar os binários
-
 └── files/
-
 ├── chromedriver # Driver do Chrome (copiado para /tmp)
-
 └── headless-chromium # Binário do Chrome Headless (copiado para /tmp)
 
 yaml
